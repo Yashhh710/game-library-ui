@@ -1,3 +1,5 @@
+<div align="center">
+
 # 🎮 Game Library UI
 
 **A fan-made game showcase website with smooth animations, a hero carousel and detailed game pages.**
@@ -21,13 +23,11 @@
 
 | Home page | Game page |
 | :---: | :---: |
-| ![Home page](<img width="1470" height="894" alt="image" src="https://github.com/user-attachments/assets/be64bca6-fe9e-49c7-85d2-abb84aad9fb0" />) | ![Game page](<img width="1470" height="920" alt="image" src="https://github.com/user-attachments/assets/2d1d6930-c349-4d34-ba47-2d46c89f34bb" />) |
+| <img src="https://github.com/user-attachments/assets/be64bca6-fe9e-49c7-85d2-abb84aad9fb0" alt="Home page" width="100%"> | <img src="https://github.com/user-attachments/assets/2d1d6930-c349-4d34-ba47-2d46c89f34bb" alt="Game page" width="100%"> |
 
 | Welcome popup | 404 page |
 | :---: | :---: |
-| ![Welcome popup](screenshots/popup.png) | ![404 page](screenshots/404.png) |
-
-> 💡 Put your own screenshots in the `screenshots/` folder with the names above (`home.png`, `game-page.png`, `404.png`). The images show up here automatically.
+| <img src="https://github.com/user-attachments/assets/c90b6503-9e30-4eab-8cf4-f0d226739b77" alt="Welcome popup" width="100%"> | <img src="https://github.com/user-attachments/assets/2341c55a-28ae-4af9-9e80-7dc61e13e5a0" alt="404 page" width="100%"> |
 
 ---
 
@@ -78,7 +78,6 @@ game-library-ui/
 │   │   ├── faq.png             # FAQ background
 │   │   └── poster.png          # Card image on the home page
 │   └── ...                 # One folder per game
-├── screenshots/            # Images used in this README
 └── README.md
 ```
 
