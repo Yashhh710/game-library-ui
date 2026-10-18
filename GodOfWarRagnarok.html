@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<script>
+window.open = function() {
+  console.warn('[Popup Blocker] Blocked a script-opened popup.');
+  return null;
+};
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>God of War Ragnarök</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚔️</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root { --glass: rgba(255,255,255,.045); --line:#2b2b2b; --muted:#9a9a9a; }
+  html { scroll-behavior: smooth; }
+  body { background:#000; }
+  .panel { background: var(--glass); -webkit-backdrop-filter: blur(18px) saturate(140%); backdrop-filter: blur(18px) saturate(140%); border:1px solid rgba(255,255,255,.12); border-radius:.75rem; box-shadow: inset 0 1px 0 rgba(255,255,255,.06); }
+  .btn-smooth { transition: all .3s cubic-bezier(.4,0,.2,1); }
+  .btn-smooth:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -5px rgba(255,255,255,.18); }
+  .btn-smooth:active { transform: translateY(0); }
+  .btn-dark { background: rgba(255,255,255,.06); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border:1px solid rgba(255,255,255,.18); color:#fff; }
+  .btn-dark:hover { background: rgba(255,255,255,.92); color:#000; }
+  button:focus-visible, a:focus-visible { outline:2px solid #fff; outline-offset:2px; }
+  @keyframes slideIn { from {opacity:.6; transform:scale(1.04);} to {opacity:1; transform:scale(1);} }
+  .slide-animation { animation: slideIn .9s cubic-bezier(.16,1,.3,1) forwards; }
+  @keyframes progress { from {width:0} to {width:100%} }
+  .progress-bar { animation: progress 5s linear forwards; }
+  .paused .progress-bar { animation-play-state: paused; }
+  ::-webkit-scrollbar { width:8px; height:8px; } ::-webkit-scrollbar-track { background:#000; }
+  ::-webkit-scrollbar-thumb { background:#2e2e2e; border-radius:4px; } ::-webkit-scrollbar-thumb:hover { background:#8a8a8a; }
+  .img-fallback { background: linear-gradient(135deg,#0a0a0a,#2a2a2a,#0a0a0a); }
+  #playModal.expanded { padding:0; }
+  #playModal.expanded .box { max-width:none; width:100vw; height:100vh; border-radius:0; border:none; }
+  .modal { transition: opacity .3s; } .modal.hidden-modal { opacity:0; pointer-events:none; }
+  .modal .box { transition: transform .3s; transform: scale(1); } .modal.hidden-modal .box { transform: scale(.94); }
+  .tag.active { background:#fff; color:#000; }
+  .spec-panel { display:none; } .spec-panel.active { display:flex; }
+  .spec-tab.active { background:#fff; color:#000; }
+  .lang-extra { display:none; } .lang-extra.show { display:table-row; }
+  @media (prefers-reduced-motion: reduce) { *,*::before,*::after { animation:none !important; transition:none !important; } }
+
+  .official-box{display:flex;align-items:center;gap:1rem;padding:1.1rem 1.4rem;text-decoration:none;color:#fff;position:relative;overflow:hidden;animation:ofIn .8s cubic-bezier(.16,1,.3,1) both;transition:transform .35s cubic-bezier(.4,0,.2,1),border-color .35s,box-shadow .35s}
+  .official-box::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.12) 50%,transparent 70%);transform:translateX(-120%);transition:transform .8s ease}
+  .official-box:hover{transform:translateY(-3px);border-color:#fff;box-shadow:0 14px 30px -10px rgba(255,255,255,.28)}
+  .official-box:hover::after{transform:translateX(120%)}
+  .official-box .of-ico{flex:0 0 auto;width:2.75rem;height:2.75rem;border-radius:9999px;border:1px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;transition:transform .4s}
+  .official-box:hover .of-ico{transform:rotate(45deg) scale(1.08)}
+  @keyframes ofIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body class="text-white font-sans m-0 p-0 overflow-x-hidden min-h-screen flex flex-col selection:bg-white selection:text-black">
+
+<!-- Toast -->
+<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[70] px-5 py-3 rounded-full text-sm text-white border border-white/20 shadow-2xl opacity-0 pointer-events-none translate-y-4 transition-all duration-300" style="background:rgba(20,20,20,.7);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)"></div>
+
+<!-- Header -->
+<header class="absolute top-0 left-0 w-full z-30 flex items-center justify-between px-6 py-4 bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-none">
+  <button id="backBtn" class="pointer-events-auto flex items-center gap-2 bg-black/60 hover:bg-black/80 text-white px-4 py-2.5 rounded-full backdrop-blur-md border border-white/10 btn-smooth group">
+    <svg class="w-5 h-5 transition-transform duration-300 group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+    <span class="text-sm font-medium tracking-wide">Back</span>
+  </button>
+</header>
+
+<!-- Hero carousel -->
+<main id="hero" class="relative w-full h-[75vh] md:h-[85vh] bg-black overflow-hidden">
+  <div id="carouselTrack" class="relative w-full h-full"></div>
+
+  <button id="prevBtn" aria-label="Previous slide" class="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/80 p-3 rounded-full backdrop-blur-md border border-white/10 btn-smooth">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+  </button>
+  <button id="nextBtn" aria-label="Next slide" class="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/80 p-3 rounded-full backdrop-blur-md border border-white/10 btn-smooth">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  </button>
+
+
+  <div id="indicators" class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex space-x-2.5"></div>
+</main>
+
+<!-- Title -->
+<section class="py-12 flex items-center justify-center bg-black">
+  <h1 class="text-3xl md:text-6xl tracking-widest text-white uppercase text-center px-4" style="font-family:'Cinzel Decorative',serif;font-weight:700;text-shadow:0 0 20px rgba(255,255,255,.3)">God of War Ragnarök</h1>
+</section>
+
+<!-- Showcase -->
+<section class="w-full py-12 px-4 md:px-8 text-[#d4d4d4]" style="background:#000">
+
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
+    <h2 class="text-2xl md:text-3xl font-light text-white tracking-wide">God of War Ragnarök</h2>
+    <div class="flex items-center gap-2">
+      <button id="wishBtn" class="btn-dark text-sm font-medium px-4 py-2 rounded btn-smooth flex items-center gap-2">
+        <svg id="wishIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.3 6.3a4.5 4.5 0 016.4 0L12 7.6l1.3-1.3a4.5 4.5 0 116.4 6.4L12 20.4l-7.7-7.7a4.5 4.5 0 010-6.4z"/></svg>
+        <span id="wishText">Add to Wishlist</span>
+      </button>
+      <button id="communityBtn" class="btn-dark text-sm font-medium px-4 py-2 rounded btn-smooth">Join Community</button>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+    <!-- Left: showcase -->
+    <div class="lg:col-span-8 flex flex-col gap-4">
+      <div class="relative w-full h-[50vh] md:h-[58vh] bg-black rounded overflow-hidden shadow-2xl border border-[#2b2b2b] group">
+        <div id="showcaseContainer" class="w-full h-full"></div>
+        <button id="expandBtn" class="hidden absolute top-3 right-3 z-20 bg-black/60 hover:bg-white hover:text-black border border-white/20 rounded-full px-3 py-1.5 text-xs backdrop-blur-md btn-smooth">Expand</button>
+        <button id="shPrev" aria-label="Previous" class="absolute left-3 top-1/2 z-20 -translate-y-1/2 bg-black/60 hover:bg-black/90 p-2 rounded-full border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></button>
+        <button id="shNext" aria-label="Next" class="absolute right-3 top-1/2 z-20 -translate-y-1/2 bg-black/60 hover:bg-black/90 p-2 rounded-full border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>
+      </div>
+      <div id="thumbs" class="flex items-center gap-2 overflow-x-auto pb-2"></div>
+    </div>
+
+    <!-- Right: info -->
+    <div class="lg:col-span-4 flex flex-col gap-5 panel p-6">
+      <button id="capsule" class="w-full h-36 rounded overflow-hidden border border-[#2b2b2b] shadow btn-smooth block" aria-label="Open banner image">
+        <img src="models/GodOfWarRagnarok/1.png" alt="God of War Ragnarök Banner" class="w-full h-full object-cover">
+      </button>
+      <p class="text-xs md:text-sm text-[#9a9a9a] leading-relaxed">Kratos and Atreus journey to each of the Nine Realms in search of answers as Asgardian forces prepare for a prophesied battle that will end the world.</p>
+
+      <div class="flex flex-col gap-2.5 text-xs border-t border-b border-[#2b2b2b] py-4">
+        <div class="flex justify-between"><span class="text-[#9a9a9a]">RECENT REVIEWS:</span><span class="text-white font-medium">See Steam page</span></div>
+        <div class="flex justify-between"><span class="text-[#9a9a9a]">ALL REVIEWS:</span><span class="text-white font-medium">See Steam page</span></div>
+        <div class="flex justify-between"><span class="text-[#9a9a9a]">RELEASE DATE:</span><span>19 Sep, 2024</span></div>
+        <div class="flex justify-between"><span class="text-[#9a9a9a]">DEVELOPER:</span><span class="text-white">Santa Monica Studio</span></div>
+        <div class="flex justify-between"><span class="text-[#9a9a9a]">PUBLISHER:</span><span class="text-white">PlayStation PC LLC</span></div>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <span class="text-[11px] text-[#9a9a9a] font-medium uppercase tracking-wider">Popular user-defined tags for this product:</span>
+        <div id="tags" class="flex flex-wrap gap-1.5 pt-1">
+          <button class="tag bg-[#2b2b2b] hover:bg-white hover:text-black text-xs px-2.5 py-1 rounded btn-smooth">Mythology</button>
+          <button class="tag bg-[#2b2b2b] hover:bg-white hover:text-black text-xs px-2.5 py-1 rounded btn-smooth">Mythology</button>
+          <button class="tag bg-[#2b2b2b] hover:bg-white hover:text-black text-xs px-2.5 py-1 rounded btn-smooth">Story Rich</button>
+        </div>
+        <p id="tagInfo" class="text-[11px] text-[#9a9a9a] min-h-[1rem]"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lower section -->
+  <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+    <div class="lg:col-span-4 flex flex-col gap-6">
+      <!-- Languages -->
+      <div class="panel p-5">
+        <span class="text-xs text-[#9a9a9a] font-medium block mb-3">Languages:</span>
+        <table class="w-full text-xs border-collapse">
+          <thead><tr class="text-[#9a9a9a] border-b border-[#2b2b2b]"><th></th><th class="font-normal py-1.5 px-2">Interface</th><th class="font-normal py-1.5 px-2">Full Audio</th><th class="font-normal py-1.5 px-2">Subtitles</th></tr></thead>
+          <tbody id="langBody" class="divide-y divide-[#2b2b2b]/60"></tbody>
+        </table>
+        <button id="langToggle" class="text-xs text-white/80 hover:text-white hover:underline block mt-3">See all 8 listed languages</button>
+      </div>
+
+      <!-- PEGI -->
+      <div class="panel p-5 flex flex-col gap-4">
+        <div class="flex items-start gap-4">
+          <div class="bg-red-600 text-white font-black text-3xl px-3 py-2 rounded border-2 border-white flex-shrink-0 flex flex-col items-center shadow-lg"><span>18</span><span class="text-[8px] font-normal tracking-tight -mt-1">www.pegi.info</span></div>
+          <div class="text-xs flex flex-col gap-1">
+            <p class="font-medium text-white">Violence, Strong Language</p>
+            <p class="text-[#9a9a9a] text-[11px] mt-1">Age rating may vary by region</p>
+            
+          </div>
+        </div>
+        <span class="text-[11px] text-[#9a9a9a] border-t border-[#2b2b2b] pt-2">Age rating for: PEGI</span>
+      </div>
+    </div>
+
+    <div class="lg:col-span-8 flex flex-col gap-6">
+      <!-- Official website -->
+      <a id="officialBox" href="https://www.playstation.com/games/god-of-war-ragnarok/" target="_blank" rel="noopener noreferrer" class="official-box panel" aria-label="Open the official God of War Ragnarök website in a new tab">
+        <span class="of-ico"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></span>
+        <span class="flex flex-col"><span class="text-base md:text-lg text-white">Official Website</span><span class="text-xs text-[#9a9a9a]">Click to open the official God of War Ragnarök website</span></span>
+        <svg class="w-5 h-5 ml-auto text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      </a>
+
+      <!-- Buy -->
+      <div class="panel p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <h3 class="text-xl md:text-2xl text-white tracking-wide flex flex-wrap items-center gap-2">
+          <span>Buy God of War Ragnarök</span><span class="text-sm md:text-base text-[#9a9a9a] font-light">(Buy Game on Steam)</span>
+        </h3>
+        <div class="flex items-center bg-black/60 p-1.5 rounded border border-black/40 self-end md:self-auto">
+          <a href="https://store.steampowered.com/app/2322010/" target="_blank" rel="noopener" class="bg-gradient-to-r from-[#75b022] to-[#588a1b] hover:from-[#8ed328] hover:to-[#6ba620] text-white text-sm font-medium px-6 py-2.5 rounded btn-smooth shadow-lg">Get Game</a>
+        </div>
+      </div>
+
+      <!-- System requirements -->
+      <div class="panel p-6 flex flex-col gap-4">
+        <div class="flex items-center justify-between border-b border-[#2b2b2b] pb-3">
+          <h3 class="text-xs font-semibold text-[#9a9a9a] uppercase">System Requirements (approx.)</h3>
+          <div class="flex gap-1 bg-black/60 p-1 rounded border border-[#2b2b2b]">
+            <button class="spec-tab active text-xs px-3 py-1 rounded btn-smooth" data-spec="min">Minimum</button>
+            <button class="spec-tab text-xs px-3 py-1 rounded btn-smooth" data-spec="rec">Recommended</button>
+          </div>
+        </div>
+        <div id="spec-min" class="spec-panel active flex-col gap-2 text-xs">
+          <p><strong class="text-[#9a9a9a]">OS:</strong> Windows 10 64-bit</p>
+          <p><strong class="text-[#9a9a9a]">Processor:</strong> Intel i5-4670K / AMD Ryzen 5 1500X</p>
+          <p><strong class="text-[#9a9a9a]">Memory:</strong> 8 GB RAM</p>
+          <p><strong class="text-[#9a9a9a]">Graphics:</strong> NVIDIA GTX 960 4GB / AMD RX 5500 XT</p>
+          <p><strong class="text-[#9a9a9a]">Storage:</strong> 190 GB SSD available space</p>
+        </div>
+        <div id="spec-rec" class="spec-panel flex-col gap-2 text-xs">
+          <p><strong class="text-[#9a9a9a]">OS:</strong> Windows 10 64-bit</p>
+          <p><strong class="text-[#9a9a9a]">Processor:</strong> Intel i5-8400 / AMD Ryzen 5 3600</p>
+          <p><strong class="text-[#9a9a9a]">Memory:</strong> 16 GB RAM</p>
+          <p><strong class="text-[#9a9a9a]">Graphics:</strong> NVIDIA GTX 1060 6GB / AMD RX 5600 XT</p>
+          <p><strong class="text-[#9a9a9a]">Storage:</strong> 190 GB SSD available space</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- FAQ + Newsletter -->
+<section class="relative w-full px-4 md:px-8 py-20 border-t border-[#1c1c1c] overflow-hidden" style="background:#000 url('models/GodOfWarRagnarok/faq.png') center/cover no-repeat">
+  <div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(180deg,#000 0%,rgba(0,0,0,.45) 25%,rgba(0,0,0,.45) 75%,#000 100%)"></div>
+  <div class="relative max-w-3xl mx-auto">
+    <div>
+      <h2 class="text-2xl md:text-3xl font-light text-white tracking-wide mb-6">Frequently asked questions</h2>
+      <div id="faq" class="flex flex-col gap-3"></div>
+    </div>
+  </div>
+</section>
+
+<footer class="bg-black border-t border-[#1c1c1c] text-xs text-[#9a9a9a]" style="background:#000">
+  <div class="max-w-7xl mx-auto px-4 md:px-8 py-12 grid grid-cols-2 md:grid-cols-4 gap-8">
+    <div class="col-span-2 md:col-span-1">
+      <h4 class="text-white text-base tracking-wide mb-3" style="font-family:'Cinzel Decorative',serif">God of War Ragnarök Showcase</h4>
+      <p class="leading-relaxed">A fan-made gallery of God of War Ragnarök visuals and system details.</p>
+    </div>
+    <div>
+      <h5 class="text-white font-medium mb-3">Explore</h5>
+      <ul class="flex flex-col gap-2">
+        <li><button data-go="#hero" class="hover:text-white hover:underline">Gallery</button></li>
+                <li><button data-go="#faq" class="hover:text-white hover:underline">FAQ</button></li>
+      </ul>
+    </div>
+    <div>
+      <h5 class="text-white font-medium mb-3">Game</h5>
+      <ul class="flex flex-col gap-2">
+        <li><a href="https://store.steampowered.com/app/2322010/" target="_blank" rel="noopener" class="hover:text-white hover:underline">Buy on Steam</a></li>
+        <li><button data-unavail class="hover:text-white hover:underline">Support</button></li>
+      </ul>
+    </div>
+    <div>
+      <h5 class="text-white font-medium mb-3">Play &amp; Buy</h5>
+      <ul class="flex flex-col gap-2.5">
+        <li><button id="footPlay" class="flex items-center gap-2 hover:text-white hover:underline"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>View gallery</button></li>
+        <li><a href="https://store.steampowered.com/app/2322010/" target="_blank" rel="noopener" class="flex items-center gap-2 hover:text-white hover:underline"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.400M7 13L5.400 5M7 13l-2.300 2.300a1 1 0 00.700 1.700H17M17 17a2 2 0 100 4 2 2 0 000-4zM9 17a2 2 0 100 4 2 2 0 000-4z"/></svg>Buy on Steam</a></li>
+        <li><a href="https://www.playstation.com/games/god-of-war-ragnarok/" target="_blank" rel="noopener" class="flex items-center gap-2 hover:text-white hover:underline"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" stroke-width="2"/><path stroke-width="2" d="M3 12h18M12 3c2.500 2.700 3.700 5.700 3.700 9s-1.200 6.300-3.700 9c-2.500-2.700-3.700-5.700-3.700-9S9.500 5.700 12 3z"/></svg>Official website</a></li>
+        <li><button data-unavail class="flex items-center gap-2 hover:text-white hover:underline"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.870M9 20H4v-2a4 4 0 013-3.870m10-6.130a3 3 0 11-6 0 3 3 0 016 0zM7 9a3 3 0 106 0"/></svg>Join Community</button></li>
+      </ul>
+    </div>
+  </div>
+  <div class="border-t border-[#1c1c1c]">
+    <div class="max-w-7xl mx-auto px-4 md:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <p>Fan showcase. God of War Ragnarök belongs to PlayStation PC LLC.</p>
+      <button id="topBtn" class="btn-dark px-4 py-2 rounded-full btn-smooth">Back to top ↑</button>
+    </div>
+  </div>
+</footer>
+
+<!-- Community modal -->
+<div id="communityModal" class="modal hidden-modal fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="cmTitle">
+  <div class="box panel max-w-sm w-full p-8 text-center relative" style="background:rgba(20,20,20,.55);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px)">
+    <button data-close class="absolute top-4 right-4 text-[#9a9a9a] hover:text-white btn-smooth" aria-label="Close"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    <div class="mx-auto w-14 h-14 rounded-full border border-white/20 flex items-center justify-center mb-4" style="background:rgba(255,255,255,.06)">
+      <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m10-6.13a3 3 0 11-6 0 3 3 0 016 0zM7 9a3 3 0 106 0"/></svg>
+    </div>
+    <h3 id="cmTitle" class="text-2xl font-light text-white mb-2">Currently Unavailable</h3>
+    <p class="text-sm text-[#9a9a9a] mb-6">The community isn't open right now. Please check back later.</p>
+    <button data-close class="btn-dark text-sm font-medium px-6 py-2.5 rounded btn-smooth">Got it</button>
+  </div>
+</div>
+
+<!-- Device modal -->
+<div id="deviceModal" class="modal hidden-modal fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="dvTitle">
+  <div class="box panel max-w-lg w-full p-6 relative" style="background:rgba(20,20,20,.55);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px)">
+    <button data-close class="absolute top-4 right-4 text-[#9a9a9a] hover:text-white btn-smooth" aria-label="Close"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+
+    <div id="deviceStep">
+      <h3 id="dvTitle" class="text-2xl font-light text-white mb-2">Select Your Device</h3>
+      <p class="text-sm text-[#9a9a9a] mb-6">Choose your system hardware configuration to launch the optimized demo experience.</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <button data-device="low" class="p-5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/15 hover:border-white/40 text-left btn-smooth flex flex-col gap-2">
+          <span class="text-base font-semibold text-white">Low End Device</span>
+          <span class="text-xs text-[#9a9a9a]">Optimized preset for integrated GPUs & standard laptops.</span>
+        </button>
+        <button data-device="high" class="p-5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/15 hover:border-white/40 text-left btn-smooth flex flex-col gap-2">
+          <span class="text-base font-semibold text-white">High End Device</span>
+          <span class="text-xs text-[#9a9a9a]">Maximum visual quality, Ray Tracing & high FPS rendering.</span>
+        </button>
+      </div>
+      <p class="mt-5 text-xs text-[#9a9a9a] leading-relaxed">
+        <span id="launchModeText">The demo will play inside this page.</span>
+      </p>
+    </div>
+
+    <div id="launchStep" class="hidden text-center py-4">
+      <h3 id="launchTitle" class="text-xl text-white mb-1"></h3>
+      <p id="launchStatus" class="text-sm text-[#9a9a9a] mb-5">Preparing…</p>
+      <div class="w-full h-2 bg-white/10 rounded overflow-hidden"><div id="launchBar" class="h-full bg-white" style="width:0%;transition:width .2s"></div></div>
+      <p id="launchPct" class="text-xs text-[#9a9a9a] mt-2">0%</p>
+      <button id="launchCancel" class="btn-dark text-xs px-4 py-2 rounded mt-5 btn-smooth">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Play modal (cross-origin isolated player) -->
+<div id="playModal" class="modal hidden-modal fixed inset-0 z-[55] bg-black/90 backdrop-blur-md flex items-center justify-center p-3 md:p-6" role="dialog" aria-modal="true" aria-label="Demo player">
+  <div class="box panel w-full max-w-6xl h-[88vh] flex flex-col overflow-hidden" style="background:rgba(12,12,12,.7)">
+    <div class="flex items-center justify-between gap-3 px-4 py-3 border-b border-white/10">
+      <span id="playTitle" class="text-sm text-white">Demo</span>
+      <div class="flex items-center gap-2">
+        <button id="playFs" class="btn-dark text-xs px-3 py-1.5 rounded btn-smooth" title="Enlarge the player to fill the window">Expand</button>
+        <button data-close class="text-[#9a9a9a] hover:text-white btn-smooth" aria-label="Close"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+      </div>
+    </div>
+    <div class="relative flex-1 bg-black">
+      <p id="playLoading" class="absolute inset-0 flex items-center justify-center text-sm text-[#9a9a9a]">Loading demo…</p>
+      <iframe id="playFrame" title="God of War Ragnarök demo" class="relative w-full h-full" sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-forms allow-downloads" referrerpolicy="no-referrer" allow="fullscreen; gamepad; autoplay; pointer-lock; cross-origin-isolated"></iframe>
+    </div>
+    <p id="playNote" class="px-4 py-2 text-[11px] text-[#9a9a9a] border-t border-white/10">Running in this page.</p>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox" class="modal hidden-modal fixed inset-0 z-[60] bg-black/95 flex items-center justify-center p-4">
+  <button id="lbClose" class="absolute top-5 right-5 text-white/80 hover:text-white" aria-label="Close"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+  <button id="lbPrev" class="absolute left-4 text-white/80 hover:text-white bg-white/10 rounded-full p-3" aria-label="Previous"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></button>
+  <img id="lbImg" src="" alt="" class="box max-h-[88vh] max-w-[92vw] object-contain rounded">
+  <button id="lbNext" class="absolute right-4 text-white/80 hover:text-white bg-white/10 rounded-full p-3" aria-label="Next"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>
+  <span id="lbCount" class="absolute bottom-5 text-xs text-white/70"></span>
+</div>
+
+<script>
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const hero = ["models/GodOfWarRagnarok/1.png", "models/GodOfWarRagnarok/2.png", "models/GodOfWarRagnarok/3.png", "models/GodOfWarRagnarok/4.png", "models/GodOfWarRagnarok/5.png", "models/GodOfWarRagnarok/6.png", "models/GodOfWarRagnarok/7.png"];
+const shots = ["models/GodOfWarRagnarok/w1.png", "models/GodOfWarRagnarok/w2.png", "models/GodOfWarRagnarok/w3.png", "models/GodOfWarRagnarok/w4.png", "models/GodOfWarRagnarok/w5.png", "models/GodOfWarRagnarok/w6.png", "models/GodOfWarRagnarok/w7.png"];
+const VIDEO_ID = 'EE-4GvjKcfs'; const OFF = VIDEO_ID ? 1 : 0;
+
+/* ---------- Toast ---------- */
+let toastT;
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg;
+  t.classList.remove('opacity-0','translate-y-4'); clearTimeout(toastT);
+  toastT = setTimeout(()=>t.classList.add('opacity-0','translate-y-4'), 2400);
+}
+
+/* ---------- Image fallback (if a file is missing) ---------- */
+document.addEventListener('error', e => {
+  if (e.target.tagName === 'IMG') { e.target.classList.add('img-fallback'); e.target.removeAttribute('src'); e.target.style.opacity = .5; }
+}, true);
+
+/* ---------- Hero carousel ---------- */
+const track = $('#carouselTrack'), dots = $('#indicators');
+hero.forEach((src,i) => {
+  track.insertAdjacentHTML('beforeend', `<div class="carousel-slide absolute inset-0 opacity-0 transition-opacity duration-1000 ease-in-out"><img src="${src}" alt="God of War Ragnarök Model ${i+1}" class="w-full h-full object-cover cursor-zoom-in"><div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/30 pointer-events-none"></div></div>`);
+  dots.insertAdjacentHTML('beforeend', `<button aria-label="Go to slide ${i+1}" class="indicator w-2.5 h-2.5 rounded-full bg-white/40 hover:bg-white transition-all duration-300"></button>`);
+});
+const slides = $$('.carousel-slide'), inds = $$('.indicator');
+let idx = 0, timer = null, playing = true;
+
+function show(i){
+  idx = (i + slides.length) % slides.length;
+  slides.forEach((s,k)=>{ s.style.opacity = k===idx?1:0; s.style.zIndex = k===idx?10:1; s.classList.toggle('slide-animation', k===idx); });
+  inds.forEach((d,k)=>{ d.style.background = k===idx?'#fff':'rgba(255,255,255,.4)'; d.style.transform = k===idx?'scale(1.3)':'scale(1)'; });
+  restartTimer();
+}
+function restartTimer(){
+  clearInterval(timer);
+  if (playing) timer = setInterval(()=>show(idx+1), 5000);
+}
+$('#prevBtn').onclick = () => show(idx-1);
+$('#nextBtn').onclick = () => show(idx+1);
+inds.forEach((d,i)=> d.onclick = () => show(i));
+slides.forEach((s,i)=> s.querySelector('img').onclick = () => openLightbox(hero, i));
+
+// pause on hover, swipe on touch
+const heroEl = $('#hero'); let hoverPaused = false;
+heroEl.addEventListener('mouseenter', ()=>{ if(playing){ hoverPaused = true; clearInterval(timer); } });
+heroEl.addEventListener('mouseleave', ()=>{ if(hoverPaused){ hoverPaused = false; restartTimer(); } });
+let sx = null;
+heroEl.addEventListener('touchstart', e => sx = e.touches[0].clientX, {passive:true});
+heroEl.addEventListener('touchend', e => { if(sx===null) return; const dx = e.changedTouches[0].clientX - sx; if(Math.abs(dx)>50) show(idx + (dx<0?1:-1)); sx = null; });
+
+/* ---------- Showcase (video + screenshots) ---------- */
+const thumbs = $('#thumbs'); let shIdx = 0; // 0 = video, 1..7 = images
+if(VIDEO_ID) thumbs.insertAdjacentHTML('beforeend', `<button data-i="0" class="steam-thumb flex-shrink-0 w-24 h-14 rounded overflow-hidden border-2 border-white btn-smooth relative bg-zinc-900" aria-label="Play trailer"><img src="https://img.youtube.com/vi/${VIDEO_ID}/hqdefault.jpg" alt="Trailer" class="w-full h-full object-cover opacity-80"><span class="absolute inset-0 flex items-center justify-center bg-black/40"><svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></button>`);
+shots.forEach((src,i)=> thumbs.insertAdjacentHTML('beforeend', `<button data-i="${i+1}" class="steam-thumb flex-shrink-0 w-24 h-14 rounded overflow-hidden border-2 border-transparent opacity-60 hover:opacity-100 btn-smooth" aria-label="Screenshot ${i+1}"><img src="${src}" alt="Screenshot ${i+1}" class="w-full h-full object-cover"></button>`));
+const thumbEls = $$('.steam-thumb');
+
+function setShowcase(i){
+  shIdx = (i + thumbEls.length) % thumbEls.length;
+  const c = $('#showcaseContainer');
+  if (shIdx === 0 && VIDEO_ID){
+    c.innerHTML = `<iframe class="w-full h-full" src="https://www.youtube.com/embed/${VIDEO_ID}?autoplay=1&mute=1" title="God of War Ragnarök trailer" frameborder="0" credentialless allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
+    $('#expandBtn').classList.add('hidden');
+  } else {
+    c.innerHTML = `<img src="${shots[shIdx-OFF]}" alt="Screenshot ${shIdx}" class="w-full h-full object-cover cursor-zoom-in" style="animation:slideIn .5s ease">`;
+    c.firstChild.onclick = () => openLightbox(shots, shIdx-OFF);
+    $('#expandBtn').classList.remove('hidden');
+  }
+  thumbEls.forEach((t,k)=>{ t.classList.toggle('border-white', k===shIdx); t.classList.toggle('border-transparent', k!==shIdx); t.classList.toggle('opacity-100', k===shIdx); t.classList.toggle('opacity-60', k!==shIdx); });
+  thumbEls[shIdx].scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+}
+thumbEls.forEach((t,k)=> t.onclick = () => setShowcase(k));
+$('#shPrev').onclick = () => setShowcase(shIdx-1);
+$('#shNext').onclick = () => setShowcase(shIdx+1);
+$('#expandBtn').onclick = () => openLightbox(shots, shIdx-OFF);
+$('#capsule').onclick = () => openLightbox(hero, 0);
+setShowcase(0);
+
+/* ---------- Modals ---------- */
+let openModal = null, lastFocus = null;
+function openM(el){ lastFocus = document.activeElement; el.classList.remove('hidden-modal'); openModal = el; const f = el.querySelector('button'); f && f.focus(); document.body.style.overflow='hidden'; }
+function closeM(){
+  if(!openModal) return;
+  const playFrame = document.getElementById('playFrame');
+  if(openModal === document.getElementById('playModal') && playFrame && playFrame.getAttribute('src') && !window.confirm('Are you sure you want to quit the game?')) return;
+  openModal.classList.add('hidden-modal');
+  openModal = null;
+  document.body.style.overflow='';
+  stopLaunch();
+  if(playFrame && playFrame.getAttribute('src')) playFrame.removeAttribute('src');
+  const pm=document.getElementById('playModal');
+  if(pm){ pm.classList.remove('expanded'); const fb=document.getElementById('playFs'); if(fb) fb.textContent='Expand'; }
+  lastFocus && lastFocus.focus();
+}
+$$('[data-close]').forEach(b => b.onclick = closeM);
+$$('.modal').forEach(m => m.addEventListener('mousedown', e => { if(e.target === m) closeM(); }));
+
+$('#communityBtn').onclick = () => openM($('#communityModal'));
+
+/* Try game: pick device -> simulated launch progress */
+let launchT = null;
+function resetDevice(){ $('#deviceStep').classList.remove('hidden'); $('#launchStep').classList.add('hidden'); }
+function stopLaunch(){ clearInterval(launchT); launchT = null; setTimeout(resetDevice, 300); }
+let DIRECT = '';
+
+/* Always use the demo site directly. The local serve.py proxy only forwards /b/ asset paths, so the game's
+   other requests (manifest/JSON) got an HTML error page back, which broke archive mounting. */
+function demoUrl(type){
+  if (!DIRECT) return '';
+  return type === 'low' ? DIRECT + '?low=1&fps=30' : DIRECT;
+}
+$$('[data-device]').forEach(b => b.onclick = () => {
+  const type = b.dataset.device, url = demoUrl(type);
+  if (!url) { closeM(); return toast('Game link is not set or not loaded yet.'); }
+  if (!window.crossOriginIsolated) {
+    closeM();
+    toast('This page is not cross-origin isolated, so the demo cannot run here');
+    return;
+  }
+  closeM();
+  $('#playTitle').textContent = type==='low' ? 'God of War Ragnarök demo - Low End (30 FPS)' : 'God of War Ragnarök demo - High End';
+  $('#playLoading').style.display = '';
+  $('#playNote').textContent = 'Running in this page.';
+  const f = $('#playFrame');
+  let loaded = false;
+  f.onload = () => { loaded = true; $('#playLoading').style.display = 'none'; };
+  f.src = url;
+  setTimeout(() => { if (!loaded) $('#playNote').textContent = 'Still loading... the demo site may block embedding or be unreachable.'; }, 12000);
+  setTimeout(() => openM($('#playModal')), 320);
+});
+$('#playFs').onclick = () => {
+  const m = $('#playModal'), on = m.classList.toggle('expanded');
+  $('#playFs').textContent = on ? 'Shrink' : 'Expand';
+};
+$('#launchCancel').onclick = () => { closeM(); toast('Launch cancelled'); };
+
+/* ---------- Lightbox ---------- */
+let lbList = [], lbI = 0;
+function lbRender(){ $('#lbImg').src = lbList[lbI]; $('#lbCount').textContent = `${lbI+1} / ${lbList.length}`; }
+function openLightbox(list, i){ lbList = list; lbI = i; lbRender(); lastFocus = document.activeElement; $('#lightbox').classList.remove('hidden-modal'); openModal = $('#lightbox'); document.body.style.overflow='hidden'; }
+$('#lbPrev').onclick = () => { lbI = (lbI-1+lbList.length)%lbList.length; lbRender(); };
+$('#lbNext').onclick = () => { lbI = (lbI+1)%lbList.length; lbRender(); };
+$('#lbClose').onclick = closeM;
+
+/* ---------- Keyboard ---------- */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') return closeM();
+  if (openModal === $('#lightbox')){ if(e.key==='ArrowLeft') $('#lbPrev').click(); if(e.key==='ArrowRight') $('#lbNext').click(); return; }
+  if (openModal) return;
+  if (e.key === 'ArrowLeft') show(idx-1);
+  if (e.key === 'ArrowRight') show(idx+1);
+  });
+
+/* ---------- Wishlist ---------- */
+let wished = false;
+$('#wishBtn').onclick = () => {
+  wished = !wished;
+  $('#wishText').textContent = wished ? 'On Your Wishlist' : 'Add to Wishlist';
+  $('#wishIcon').setAttribute('fill', wished ? 'currentColor' : 'none');
+  toast(wished ? 'Added to your wishlist' : 'Removed from your wishlist');
+};
+
+/* ---------- Tags ---------- */
+const tagText = {"Action": "Brutal, cinematic combat with the Leviathan Axe.", "Mythology": "Norse gods and the coming of Ragnarök.", "Story Rich": "A deeply emotional father and son story."};
+$$('.tag').forEach(t => t.onclick = () => {
+  const on = !t.classList.contains('active');
+  $$('.tag').forEach(x => x.classList.remove('active'));
+  t.classList.toggle('active', on);
+  $('#tagInfo').textContent = on ? tagText[t.textContent] : '';
+});
+
+/* ---------- Languages ---------- */
+const langs = [['English',1,1,1],['French',1,0,1],['German',1,0,1],['Spanish',1,0,1],['Italian',1,0,1],['Japanese',1,0,1],['Polish',1,0,1],['Russian',1,0,1]];
+const tick = v => v ? '<span class="text-white">✓</span>' : '';
+$('#langBody').innerHTML = langs.map((l,i)=>`<tr class="${i>=5?'lang-extra':''}"><td class="py-2 text-white">${l[0]}</td><td class="text-center">${tick(l[1])}</td><td class="text-center">${tick(l[2])}</td><td class="text-center">${tick(l[3])}</td></tr>`).join('');
+let langOpen = false;
+$('#langToggle').onclick = () => {
+  langOpen = !langOpen;
+  $$('.lang-extra').forEach(r => r.classList.toggle('show', langOpen));
+  $('#langToggle').textContent = langOpen ? 'Show fewer languages' : 'See all 8 listed languages';
+};
+
+/* ---------- System requirement tabs ---------- */
+$$('.spec-tab').forEach(t => t.onclick = () => {
+  $$('.spec-tab').forEach(x => x.classList.toggle('active', x === t));
+  $$('.spec-panel').forEach(p => p.classList.toggle('active', p.id === 'spec-' + t.dataset.spec));
+});
+
+/* ---------- Misc buttons ---------- */
+$('#backBtn').onclick = () => { history.length > 1 ? history.back() : toast('No previous page to go back to'); };
+$('#topBtn').onclick = () => window.scrollTo({top:0, behavior:'smooth'});
+
+/* ---------- FAQ ---------- */
+const faqs = [
+  ['Is this the official game page?','No. This is a fan showcase. Use the Get Game button to open the official Steam store page.'],
+  ['Where can I learn more?','Use the Official Website box on this page to open the official God of War Ragnarök website in a new tab.'],
+    ['What PC do I need?','See System Requirements above and switch between Minimum and Recommended.']
+];
+$('#faq').innerHTML = faqs.map(q=>`<div class="panel"><button class="faq-q w-full flex items-center justify-between p-5 text-left text-sm text-white" aria-expanded="false"><span>${q[0]}</span><svg class="w-4 h-4 flex-shrink-0 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14M5 12h14"/></svg></button><div class="overflow-hidden transition-all duration-300 text-xs text-[#9a9a9a] leading-relaxed px-5" style="max-height:0">${q[1]}<div class="h-5"></div></div></div>`).join('');
+$$('.faq-q').forEach(b => b.onclick = () => {
+  const open = b.getAttribute('aria-expanded') === 'true', a = b.nextElementSibling;
+  $$('.faq-q').forEach(x => { x.setAttribute('aria-expanded', false); x.nextElementSibling.style.maxHeight = '0'; x.querySelector('svg').style.transform = ''; });
+  if(!open){ b.setAttribute('aria-expanded', true); a.style.maxHeight = a.scrollHeight + 'px'; b.querySelector('svg').style.transform = 'rotate(45deg)'; }
+});
+
+/* ---------- Footer links ---------- */
+$$('[data-go]').forEach(b => b.onclick = () => document.querySelector(b.dataset.go).scrollIntoView({behavior:'smooth'}));
+$$('[data-unavail]').forEach(b => b.onclick = () => openM($('#communityModal')));
+$('#footPlay').onclick = () => { setShowcase(0); document.querySelector('#showcaseContainer').scrollIntoView({behavior:'smooth', block:'center'}); };
+
+show(0);
+</script>
+</body>
+</html>
